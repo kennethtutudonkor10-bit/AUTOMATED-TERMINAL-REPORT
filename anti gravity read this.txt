@@ -1,0 +1,148 @@
+🔗 Technical Schema Memo: Google Apps Script Data MappingIf you are running an automation engine or webhook handler (like a Google Apps Script) to map inputs directly from this interface into a spreadsheet or document merge template, you must re-align your data object parser. The schema has changed from the original plain baseline variables.Use this blueprint to update your spreadsheet columns or JSON synchronization parameters:1. Score Matrix Schema UpdatesThe old script targeted flat single values for SBA and Exam. Your data synchronizer loop must now capture the nested object array structured across the modified Ghanaian component parameters:Old Schema FieldNew Schema Property TargetTypical Maximum Value Scalesba (Flat Value)scores.[subject].cat1/ 20scores.[subject].cat2/ 20scores.[subject].project/ 10scores.[subject].group/ 10examscores.[subject].exam/ 502. Class Metadata Schema UpdatesWhen creating or patching spreadsheet data ranges for Class objects, ensure your synchronization row payload looks like this:JSON{
+  "classId": "generated_uuid_here",
+  "className": "Basic 4", 
+  "classSection": "Gold", 
+  "academicYear": "2025/2026",
+  "term": "Third Term",
+  "teacher": "Kenneth Donkor-Tutu"
+}
+3. Application System Global SettingsYour script can easily scrape the persistent school identity constants directly out of the browser memory allocation for header templates or dynamic reporting sheets:localStorage.getItem('savedSchoolName') (Returns text string)localStorage.getItem('savedSchoolLogo') (Returns image string encoded in Base64 data:image/png;base64,...)To design a modern school management system database for **2026**, analyzing industry benchmarks like *eSchool* (along with platforms like *eSkooly*, *Classter*, and regional platforms like *eSchool Ghana*) reveals a major shift.
+
+Systems have evolved from simple digital filing cabinets into **intelligent ecosystems**. Instead of just storing static tables, a 2026 database architecture must support **hyper-automation, AI analytics, unified SIS/LMS structures, and strict role-based access.**
+
+The core database schemas and feature requirements below reflect a cutting-edge 2026 school management system.
+
+---
+
+### 1. Unified Core Modules (The Database Backbone)
+
+Modern architectures discard fragmented databases. Your database must maintain a **"Single Source of Truth"** mapping across the core functional pillars:
+
+* **Student Information System (SIS):** Tracking demographic data, enrollment history, health records, behavior, and multi-disciplinary subject choices.
+* **Learning Management System (LMS) Integration:** Grading engines, customizable/weighted report card schemas, lesson planners, homework submissions, and adaptive testing.
+* **Human Resource Management (HRM):** Staff records, automated teacher logs, job letter issues, and payroll processing schemas.
+
+### 2. Emerging 2026 Database Feature Requirements
+
+To remain competitive with top systems, your database must be built to handle specific structural logic for these modern features:
+
+#### A. Multi-Tenant & Multi-Campus Architecture
+
+* **Feature:** A single deployment capable of managing multiple school branches (e.g., primary, junior high, senior high campuses) while isolating data visibility or sharing common parameters.
+* **Database Impact:** Every primary table (`students`, `staff`, `finance`) requires a `school_id` or `campus_id` foreign key. Global roles determine if an admin can query across campuses or is strictly isolated.
+
+#### B. Granular Role-Based Access Control (RBAC)
+
+* **Feature:** Systems like *eSchool Ghana* emphasize dedicated portals for 4 key entities: **Super-Admin/Management, Staff/Teachers, Students, and Parents**.
+* **Database Impact:** A strict, decoupled RBAC schema mapping permissions (`can_view_medical_records`, `can_edit_fees`, `can_post_grades`) to roles, rather than hardcoding capabilities.
+
+#### C. Smart Attendance & Biometric Data Mapping
+
+* **Feature:** Passing paper attendance sheets is obsolete. Current systems track real-time attendance using QR code scans, RFID cards, or biometric check-ins.
+* **Database Impact:** The `attendance` table needs to log precise scan timestamps (`check_in_time`), methods, and status flags (`present`, `late`, `excused`) which trigger automated external actions.
+
+#### D. Hyper-Automation & Webhook Triggers
+
+* **Feature:** 2026 platforms automate cross-department workflows. For example, when a parent pays a fee online, the database automatically clears the financial hold, generates an invoice, and opens student portal features.
+* **Database Impact:** Database design needs event logs or transactional triggers that communicate with real-time automated messaging microservices (WhatsApp API, SMS gateways, push notifications).
+
+#### E. AI & Analytics Data Prep (Historical Tracking)
+
+* **Feature:** Leading systems are moving toward *predictive* learning intervention and *wellbeing analytics*. They capture attendance dips and declining grades to flags students at risk before exams occur.
+* **Database Impact:** To feed AI/analytics dashboards, database designs require descriptive and time-series historical storage. Gradebooks cannot simply overwrite previous metrics; they must log progressive performance data over semesters.
+
+#### F. Flexible Financial Engines
+
+* **Feature:** Automated flexible fee modeling. The system needs to calculate split-payments, partial scholarships, customized localized currency settings, discount waivers, and track defaulters automatically.
+
+---
+
+### 3. Recommended Database Schema Blueprints
+
+When drafting your database entities (using PostgreSQL, MySQL, or a MongoDB/Relational hybrid), consider incorporating these optimized tables:
+
+#### Users & Authentication (Unified Entity Model)
+
+Instead of separate tables for teachers and students, use a polymorphic or shared user table to handle logins securely.
+
+```sql
+CREATE TABLE users (
+    user_id UUID PRIMARY KEY,
+    campus_id INT REFERENCES campuses(id),
+    email VARCHAR(255) UNIQUE,
+    password_hash VARCHAR(255),
+    role_type VARCHAR(50), -- 'admin', 'teacher', 'student', 'parent'
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+```
+
+#### Student Profile & Pastoral Care (SIS Layer)
+
+```sql
+CREATE TABLE students (
+    student_id UUID PRIMARY KEY REFERENCES users(user_id),
+    admission_number VARCHAR(100) UNIQUE,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    date_of_birth DATE,
+    medical_notes TEXT,
+    wellbeing_score NUMERIC(3,2), -- 2026 AI Insight feature tracking
+    parent_id UUID REFERENCES users(user_id)
+);
+
+```
+
+#### Multi-Channel Automated Attendance
+
+```sql
+CREATE TABLE attendance (
+    attendance_id BIGSERIAL PRIMARY KEY,
+    student_id UUID REFERENCES students(student_id),
+    class_id INT REFERENCES classes(id),
+    status VARCHAR(20), -- 'Present', 'Absent', 'Late', 'Excused'
+    tracking_method VARCHAR(30), -- 'RFID_Card', 'QR_Scan', 'Manual_App'
+    recorded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+```
+
+#### Modern Gradebook & Continuous Assessment (LMS Layer)
+
+```sql
+CREATE TABLE grades (
+    grade_id BIGSERIAL PRIMARY KEY,
+    student_id UUID REFERENCES students(student_id),
+    subject_id INT REFERENCES subjects(id),
+    term_id INT REFERENCES terms(id),
+    assessment_type VARCHAR(50), -- 'Class_Score', 'Exam', 'Project'
+    score_obtained NUMERIC(5,2),
+    weight_percentage NUMERIC(5,2), -- For calculating weighted averages automatically
+    teacher_remarks TEXT,
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+```
+
+#### Automated Ledger & Fees (Finance Layer)
+
+```sql
+CREATE TABLE student_ledgers (
+    ledger_id BIGSERIAL PRIMARY KEY,
+    student_id UUID REFERENCES students(student_id),
+    fee_category_id INT REFERENCES fee_categories(id),
+    total_due NUMERIC(10,2),
+    amount_paid NUMERIC(10,2) DEFAULT 0.00,
+    waiver_discount NUMERIC(10,2) DEFAULT 0.00,
+    payment_status VARCHAR(20), -- 'Paid', 'Partially_Paid', 'Unpaid'
+    last_transaction_id VARCHAR(255), -- Link to online payment gateways
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+```
+
+### Actionable Development Strategy
+
+1. **Prioritize APIs First:** Ensure your database structure seamlessly exposes endpoints for **Mobile Apps**. Administrators, teachers, and parents heavily rely on real-time mobile portal updates.
+2. **Build Modularly:** Treat features like the LMS, Timetable Engine, and Finance Tracking as separate modules connected to the core User/Student table. This allows you to expand the platform feature-by-feature without rewriting core database relationships.

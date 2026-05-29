@@ -1,0 +1,8 @@
+{
+  "classId": "generated_uuid_here",
+  "className": "Basic 4", 
+  "classSection": "Gold", 
+  "academicYear": "2025/2026",
+  "term": "Third Term",
+  "teacher": "Kenneth Donkor-Tutu"
+}

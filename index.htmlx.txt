@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ghana School Terminal Report System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C8973A;
+    --gold-light: #F5E6C8;
+    --gold-pale: #FDF8EE;
+    --ink: #1A1814;
+    --ink-mid: #4A4540;
+    --ink-soft: #8A8278;
+    --surface: #FFFFFF;
+    --surface-2: #FAF9F7;
+    --surface-3: #F3F1EC;
+    --border: #E8E4DC;
+    --border-strong: #D4CEBF;
+    --green: #2D6A4F;
+    --green-light: #D8F3DC;
+    --red: #8B1A1A;
+    --red-light: #FDEAEA;
+    --blue: #1B4F72;
+    --blue-light: #D6EAF8;
+    --shadow: 0 1px 3px rgba(26,24,20,0.08), 0 4px 12px rgba(26,24,20,0.06);
+    --shadow-lg: 0 4px 16px rgba(26,24,20,0.12), 0 12px 40px rgba(26,24,20,0.08);
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface-2);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--ink);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--gold);
+  }
+  .header-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    gap: 1rem;
+  }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-crest {
+    width: 36px; height: 36px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: var(--ink);
+    flex-shrink: 0;
+  }
+  .brand-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: white;
+    line-height: 1.2;
+  }
+  .brand-sub { font-size: 11px; color: #999; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
+  .header-nav {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: #ccc;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { color: white; background: rgba(255,255,255,0.08); }
+  .nav-btn.active { color: var(--gold); border-color: rgba(200,151,58,0.4); background: rgba(200,151,58,0.1); }
+
+  /* ── LAYOUT ── */
+  .app-body {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── PAGE TITLE ── */
+  .page-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .page-title h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .page-title p { color: var(--ink-soft); font-size: 14px; margin-top: 3px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 3px; height: 14px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink-mid);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }<table class="subjects-table" id="scores-table">
+  <thead>
+    <!-- Top Row: Group Headers -->
+    <tr>
+      <th rowspan="2" style="width: 180px; vertical-align: middle;">Subject</th>
+      <th colspan="4" style="background: var(--gold-pale); border-bottom: 2px solid var(--gold);">School-Based Assessment (SBA)</th>
+      <th rowspan="2" style="width: 90px; vertical-align: middle;">Exam Score</th>
+      <th rowspan="2" style="width: 80px; vertical-align: middle;">Total (100)</th>
+      <th rowspan="2" style="width: 70px; vertical-align: middle;">Grade</th>
+      <th rowspan="2" style="vertical-align: middle;">Remark</th>
+    </tr>
+    <!-- Bottom Row: Sub-components -->
+    <tr>
+      <th style="font-size: 10px; width: 70px;">CAT 1</th>
+      <th style="font-size: 10px; width: 70px;">CAT 2</th>
+      <th style="font-size: 10px; width: 70px;">Project</th>
+      <th style="font-size: 10px; width: 70px;">Group Work</th>
+    </tr>
+  </thead>
+  <tbody id="scores-tbody">
+    <!-- Rows will be injected here via JavaScript -->
+  </tbody>
+</table>
+  .btn:hover { background: var(--surface-3); border-color: var(--gold); color: var(--ink); }
+  .btn-primary {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+  .btn-primary:hover { background: var(--ink-mid); border-color: var(--ink-mid); color: white; }
+  .btn-gold {
+    background: var(--gold);
+    color: white;
+    border-color: var(--gold);
+  }
+  .btn-gold:hover { background: #b5852e; border-color: #b5852e; color: white; }
+  .btn-danger { color: var(--red); border-color: #F5C6C6; }
+  .btn-danger:hover { background: var(--red-light); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* ── FORMS ── */
+  .form-row {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  input[type="text"], input[type="number"], select, textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,151,58,0.12); }
+  input[type="number"] { text-align: right; }
+
+  /* ── SCORE INPUTS ── */
+  .score-input {
+    width: 72px !important;
+    text-align: center !important;
+    padding: 7px 8px !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+  }
+  .score-input:invalid { border-color: #F5C6C6; }
+
+  /* ── SUBJECTS TABLE ── */
+  .subjects-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .subjects-table th {
+    background: var(--surface-3);
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .subjects-table th:not(:first-child) { text-align: center; }
+  .subjects-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .subjects-table tr:last-child td { border-bottom: none; }
+  .subjects-table tr:hover td { background: var(--gold-pale); }
+  .subject-name { font-weight: 500; color: var(--ink); }
+  .total-score {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--ink);
+    text-align: center;
+  }
+  .grade-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--gold-light);
+    color: var(--gold);
+    margin: auto;
+  }
+  .grade-badge.A { background: #D8F3DC; color: #2D6A4F; }
+  .grade-badge.B-plus { background: #D6EAF8; color: #1B4F72; }
+  .grade-badge.B { background: #E8DAEF; color: #6C3483; }
+  .grade-badge.C-plus { background: #FEF9E7; color: #B7950B; }
+  .grade-badge.C { background: #FDEBD0; color: #AF601A; }
+  .grade-badge.D { background: #FDEAEA; color: #922B21; }
+  .grade-badge.E, .grade-badge.F { background: #FDEAEA; color: var(--red); }
+  .remark-text { font-size: 12px; color: var(--ink-soft); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    text-align: center;
+  }
+  .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 600; color: var(--ink); font-family: 'Playfair Display', serif; line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+
+  /* ── CLASS LIST TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th {
+    background: var(--ink);
+    color: rgba(255,255,255,0.9);
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: left;
+    position: sticky;
+    top: 60px;
+  }
+  .data-table th:not(:first-child):not(:nth-child(2)) { text-align: center; }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink-mid);
+  }
+  .data-table tr:hover td { background: var(--gold-pale); cursor: pointer; }
+  .data-table td.rank-cell {
+    font-weight: 700;
+    text-align: center;
+    font-size: 15px;
+  }
+  .rank-1 { color: #B8860B; }
+  .rank-2 { color: #808080; }
+  .rank-3 { color: #8B4513; }
+
+  /* ── STUDENT SELECTOR ── */
+  .student-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: end;
+  }
+
+  /* ── REPORT CARD PRINT ── */
+  .report-card {
+    background: white;
+    border: 2px solid var(--gold);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    max-width: 720px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-lg);
+  }
+  .rc-header {
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .rc-school { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+  .rc-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ink); margin: 4px 0; }
+  .rc-subtitle { font-size: 13px; color: var(--ink-soft); }
+  .rc-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 2rem;
+    margin-bottom: 1.5rem;
+    font-size: 13px;
+  }
+  .rc-meta-item { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--border); padding: 5px 0; }
+  .rc-meta-item .key { color: var(--ink-soft); font-weight: 500; }
+  .rc-meta-item .val { font-weight: 600; color: var(--ink); }
+  .rc-subjects {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    font-size: 13px;
+  }
+  .rc-subjects th {
+    background: var(--ink);
+    color: rgba(255,255,255,0.9);
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+  .rc-subjects th:first-child { text-align: left; }
+  .rc-subjects td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .rc-subjects td:first-child { text-align: left; font-weight: 500; }
+  .rc-summary {
+    background: var(--gold-pale);
+    border: 1px solid var(--gold-light);
+    border-radius: var(--radius);
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    text-align: center;
+  }
+  .rc-sum-item .k { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin-bottom: 4px; }
+  .rc-sum-item .v { font-size: 20px; font-weight: 700; font-family: 'Playfair Display', serif; color: var(--ink); }
+  .rc-conduct {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 13px;
+  }
+  .rc-conduct h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); margin-bottom: 10px; }
+  .rc-conduct-row { display: flex; justify-content: space-between; border-bottom: 1px dotted var(--border); padding: 6px 0; }
+  .rc-conduct-row:last-child { border-bottom: none; }
+  .rc-sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+  .sig-block { text-align: center; }
+  .sig-line { border-top: 1px solid var(--ink-mid); margin: 2rem 0 4px; }
+  .sig-label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+  .rc-legend {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-bottom: 1.5rem;
+    font-size: 11px;
+  }
+  .legend-item {
+    background: var(--surface-3);
+    border-radius: 5px;
+    padding: 5px 8px;
+    text-align: center;
+    color: var(--ink-soft);
+  }
+  .legend-item span { font-weight: 700; color: var(--ink); }
+
+  /* ── CLASS MANAGEMENT ── */
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .class-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .class-tile:hover { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,151,58,0.12); }
+  .class-tile.selected { border-color: var(--gold); background: var(--gold-pale); }
+  .class-tile-name { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+  .class-tile-meta { font-size: 12px; color: var(--ink-soft); }
+  .class-tile-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: var(--gold-light);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  .new-class-form { display: none; }
+  .new-class-form.open { display: block; }
+
+  /* ── GOOGLE LINKS ── */
+  .integrations-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .integration-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    background: var(--surface);
+  }
+  .integration-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .integration-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .integration-title { font-weight: 600; font-size: 15px; }
+  .integration-sub { font-size: 12px; color: var(--ink-soft); }
+  .integration-url-row {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .integration-url-row input { flex: 1; font-size: 12px; }
+  .url-status {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-top: 8px;
+    display: none;
+  }
+  .url-status.ok { background: var(--green-light); color: var(--green); display: block; }
+  .url-status.err { background: var(--red-light); color: var(--red); display: block; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--ink);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 9999;
+    border-left: 3px solid var(--gold);
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--ink-soft);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 1rem; }
+  .empty-state h3 { font-size: 18px; color: var(--ink); margin-bottom: 0.5rem; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+  .tab {
+    padding: 9px 18px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--ink-soft);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--ink); border-bottom-color: var(--gold); }
+
+  /* ── PRINT ── */
+  @media print {
+    .app-header, .view-controls, .no-print { display: none !important; }
+    body { background: white; }
+    .report-card { border: 1px solid #ccc; box-shadow: none; max-width: 100%; }
+    .app-body { padding: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .form-row.cols-2, .form-row.cols-3, .form-row.cols-4 { grid-template-columns: 1fr; }
+    .student-selector { grid-template-columns: 1fr; }
+    .integrations-grid { grid-template-columns: 1fr; }
+    .rc-meta { grid-template-columns: 1fr; }
+    .rc-summary { grid-template-columns: 1fr; }
+    .rc-legend { grid-template-columns: repeat(2, 1fr); }
+    .header-nav { gap: 2px; }
+    .nav-btn { padding: 6px 8px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="brand-crest">GES</div>
+      <div>
+        <div class="brand-title">Terminal Report System</div>
+        <div class="brand-sub">Ghana Education Service · Primary School</div>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn active" onclick="switchView('enter')">📝 Enter Scores</button>
+      <button class="nav-btn" onclick="switchView('results')">📊 Class Results</button>
+      <button class="nav-btn" onclick="switchView('report')">📄 Report Card</button>
+      <button class="nav-btn" onclick="switchView('classes')">🏫 Classes</button>
+      <button class="nav-btn" onclick="switchView('integrate')">🔗 Google Link</button>
+    </nav>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <!-- ═══ VIEW: ENTER SCORES ═══ -->
+  <div id="view-enter" class="view active">
+    <div class="page-title">
+      <div>
+        <h1>Enter Student Scores</h1>
+        <p>Input SBA and Exam scores for each subject · Grades and totals calculate automatically</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select id="enter-class-select" style="width:auto;font-size:13px;" onchange="loadClassForEntry()">
+          <option value="">Select a class…</option>
+        </select>
+        <button class="btn btn-gold" onclick="saveAllScores()">💾 Save All</button>
+      </div>
+    </div>
+
+    <div id="enter-empty" class="card">
+      <div class="empty-state">
+        <div class="empty-icon">🏫</div>
+        <h3>No class selected</h3>
+        <p>Choose a class from the dropdown above, or create a new class under <strong>Classes</strong>.</p>
+      </div>
+    </div>
+
+    <div id="enter-content" style="display:none;">
+      <!-- Student nav -->
+      <div class="card" style="padding:1rem 1.5rem;">
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <div style="flex:1;min-width:200px;">
+            <label>Student</label>
+            <select id="student-nav" style="font-size:14px;" onchange="loadStudentScores()">
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:18px;">
+            <button class="btn btn-sm" onclick="prevStudent()">← Prev</button>
+            <button class="btn btn-sm" onclick="nextStudent()">Next →</button>
+          </div>
+          <div id="student-rank-badge" style="background:var(--gold-light);color:var(--gold);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;margin-top:18px;display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Score entry card -->
+      <div class="card">
+        <div class="card-title">Subject Scores</div>
+        <table class="subjects-table" id="scores-table">
+          <thead>
+            <tr>
+              <th style="width:180px;">Subject</th>
+              <th style="width:100px;">SBA (50%)</th>
+              <th style="width:100px;">Exam (50%)</th>
+              <th style="width:90px;">Total /100</th>
+              <th style="width:70px;">Grade</th>
+              <th>Remark</th>
+            </tr>
+          </thead>
+          <tbody id="scores-tbody">
+          </tbody>
+        </table>
+        <!-- Totals row -->
+        <div style="border-top:2px solid var(--border);margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+          <div style="font-size:13px;color:var(--ink-soft);">Auto-calculated from scores above</div>
+          <div style="display:flex;gap:1.5rem;font-size:14px;">
+            <div><span style="color:var(--ink-soft);">Total: </span><strong id="grand-total">—</strong></div>
+            <div><span style="color:var(--ink-soft);">Average: </span><strong id="grand-avg">—</strong></div>
+            <div><span style="color:var(--ink-soft);">Overall Grade: </span><strong id="overall-grade">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conduct & Remarks -->
+      <div class="card">
+        <div class="card-title">Conduct, Attendance & Remarks</div>
+        <div class="form-row cols-3">
+          <div>
+            <label>Days Present</label>
+            <input type="number" id="days-present" min="0" max="100" placeholder="e.g. 68">
+          </div>
+          <div>
+            <label>Days in Term</label>
+            <input type="number" id="days-total" min="0" max="100" placeholder="e.g. 75">
+          </div>
+          <div>
+            <label>Conduct / Behaviour</label>
+            <select id="conduct">
+              <option value="">— Select —</option>
+              <option>Excellent</option>
+              <option>Very Good</option>
+              <option>Good</option>
+              <option>Satisfactory</option>
+              <option>Needs Improvement</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label>Class Teacher's Remarks</label>
+          <textarea id="teacher-remarks" rows="3" placeholder="Enter teacher's comments…" style="resize:vertical;"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button class="btn" onclick="clearStudentScores()">Clear</button>
+        <button class="btn btn-primary" onclick="saveStudentScores()">Save Student</button>
+        <button class="btn btn-gold" onclick="viewReportCard()">View Report Card →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VIEW: CLASS RESULTS ═══ -->
+  <div id="view-results" class="view">
+    <div class="page-title">
+      <div>
+        <h1>Class Results</h1>
+        <p>Full class ranking and performance overview</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+        <select id="results-class-select" style="width:auto;font-size:13px;" onchange="renderClassResults()">
+          <option value="">Select a class…</option>
+        </select>
+        <button class="btn" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn btn-gold" onclick="window.print()">🖨 Print</button>
+      </div>
+    </div>
+
+    <div id="results-stats" class="stats-strip" style="display:none;"></div>
+
+    <div class="card" style="overflow-x:auto;">
+      <div class="card-title">Class Rankings</div>
+      <div id="results-table-wrap">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <h3>No class selected</h3>
+          <p>Select a class above to view results.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VIEW: REPORT CARD ═══ -->
+  <div id="view-report" class="view">
+    <div class="page-title no-print">
+      <div>
+        <h1>Report Card</h1>
+        <p>Generate and print individual terminal report cards</p>
+      </div>
+    </div>
+
+    <div class="student-selector no-print">
+      <div>
+        <label>Class</label>
+        <select id="rc-class-select" style="font-size:14px;" onchange="populateRCStudents()">
+          <option value="">— Select class —</option>
+        </select>
+      </div>
+      <div>
+        <label>Student</label>
+        <select id="rc-student-select" style="font-size:14px;" onchange="renderReportCard()">
+          <option value="">— Select student —</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="report-card-wrap">
+      <div class="card">
+        <div class="empty-state">
+          <div class="empty-icon">📄</div>
+          <h3>Select a student</h3>
+          <p>Choose a class and student above to generate the report card.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="rc-actions" style="display:none;text-align:center;margin-top:1rem;" class="no-print">
+      <button class="btn btn-primary" onclick="window.print()">🖨 Print Report Card</button>
+    </div>
+  </div>
+
+  <!-- ═══ VIEW: CLASSES ═══ -->
+  <div id="view-classes" class="view">
+    <div class="page-title">
+      <div>
+        <h1>Class Management</h1>
+        <p>Manage classes and student rosters</p>
+      </div>
+      <button class="btn btn-gold" onclick="toggleNewClassForm()">＋ New Class</button>
+    </div>
+
+    <!-- New class form -->
+    <div id="new-class-form" class="card new-class-form">
+      <div class="card-title">Create New Class</div>
+      <div class="form-row cols-3">
+        <div>
+          <label>Class Name</label>
+          <input type="text" id="nc-name" placeholder="e.g. Class 2, Basic 4…">
+        </div>
+        <div>
+          <label>Academic Year</label>
+          <input type="text" id="nc-year" value="2024/2025">
+        </div>
+        <div>
+          <label>Term</label>
+          <select id="nc-term">
+            <option>First Term</option>
+            <option>Second Term</option>
+            <option selected>Third Term</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div>
+          <label>Class Teacher</label>
+          <input type="text" id="nc-teacher" placeholder="Teacher's full name">
+        </div>
+        <div>
+          <label>School Name</label>
+          <input type="text" id="nc-school" placeholder="School name">
+        </div>
+      </div>
+
+      <!-- Subjects selector -->
+      <div style="margin-bottom:1rem;">
+        <label style="margin-bottom:8px;display:block;">Subjects (check all that apply)</label>
+        <div id="subjects-checkboxes" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;"></div>
+      </div>
+
+      <!-- Student roster -->
+      <div style="margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <label style="margin:0;">Student Roster</label>
+          <button class="btn btn-sm" onclick="addStudentRow()">＋ Add Student</button>
+        </div>
+        <div id="student-roster" style="display:grid;gap:6px;max-height:300px;overflow-y:auto;padding-right:4px;"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn" onclick="toggleNewClassForm()">Cancel</button>
+        <button class="btn btn-primary" onclick="createClass()">Create Class</button>
+      </div>
+    </div>
+
+    <div id="class-grid" class="class-grid">
+      <div class="empty-state" style="grid-column:1/-1;padding:3rem;">
+        <div class="empty-icon">🏫</div>
+        <h3>No classes yet</h3>
+        <p>Click <strong>New Class</strong> to get started.</p>
+      </div>
+    </div>
+
+    <!-- Class detail panel -->
+    <div id="class-detail" style="display:none;">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;">
+          <div class="card-title" id="detail-title" style="margin:0;"></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm btn-danger" onclick="deleteClass()">🗑 Delete Class</button>
+          </div>
+        </div>
+        <div id="class-detail-meta" style="font-size:13px;color:var(--ink-soft);margin-bottom:1rem;"></div>
+        <div id="class-student-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VIEW: GOOGLE INTEGRATIONS ═══ -->
+  <div id="view-integrate" class="view">
+    <div class="page-title">
+      <div>
+        <h1>Google Integration</h1>
+        <p>Link to Google Sheets and Google Docs for your report data</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;background:var(--gold-pale);border-color:var(--gold-light);">
+      <p style="font-size:14px;color:var(--ink-mid);line-height:1.7;">
+        <strong>How it works:</strong> Paste the URL of your Google Sheet or Google Doc below. 
+        Use the links to open them in a new tab. You can also export your class data as CSV, 
+        then import it into Google Sheets. For full two-way sync, use Google Apps Script with your Sheets URL.
+      </p>
+    </div>
+
+    <div class="integrations-grid">
+      <!-- Google Sheets -->
+      <div class="integration-card">
+        <div class="integration-header">
+          <div class="integration-icon" style="background:#E8F5E9;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="3" width="18" height="18" rx="3" fill="#34A853"/>
+              <rect x="7" y="8" width="10" height="1.5" rx="0.75" fill="white"/>
+              <rect x="7" y="11" width="10" height="1.5" rx="0.75" fill="white" opacity="0.8"/>
+              <rect x="7" y="14" width="7" height="1.5" rx="0.75" fill="white" opacity="0.6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="integration-title">Google Sheets</div>
+            <div class="integration-sub">Link your master score sheet</div>
+          </div>
+        </div>
+        <label>Google Sheet URL</label>
+        <div class="integration-url-row">
+          <input type="text" id="sheets-url" placeholder="https://docs.google.com/spreadsheets/d/…" oninput="validateGoogleURL('sheets')">
+          <button class="btn btn-sm" onclick="openGoogleLink('sheets')">Open ↗</button>
+        </div>
+        <div id="sheets-status" class="url-status"></div>
+        <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="exportCSV()">⬇ Export CSV for Sheets</button>
+          <button class="btn btn-sm btn-primary" onclick="saveGoogleURL('sheets')">Save Link</button>
+        </div>
+        <p style="font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:1.6;">
+          Export your class data as CSV, then import into your Google Sheet via 
+          <em>File → Import → Upload</em>.
+        </p>
+      </div>
+
+      <!-- Google Docs -->
+      <div class="integration-card">
+        <div class="integration-header">
+          <div class="integration-icon" style="background:#E3F2FD;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="3" width="18" height="18" rx="3" fill="#4285F4"/>
+              <rect x="7" y="8" width="10" height="1.5" rx="0.75" fill="white"/>
+              <rect x="7" y="11" width="10" height="1.5" rx="0.75" fill="white" opacity="0.8"/>
+              <rect x="7" y="14" width="6" height="1.5" rx="0.75" fill="white" opacity="0.6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="integration-title">Google Docs</div>
+            <div class="integration-sub">Link your report card template</div>
+          </div>
+        </div>
+        <label>Google Doc URL</label>
+        <div class="integration-url-row">
+          <input type="text" id="docs-url" placeholder="https://docs.google.com/document/d/…" oninput="validateGoogleURL('docs')">
+          <button class="btn btn-sm" onclick="openGoogleLink('docs')">Open ↗</button>
+        </div>
+        <div id="docs-status" class="url-status"></div>
+        <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-sm" onclick="window.print()">🖨 Print Report Card</button>
+          <button class="btn btn-sm btn-primary" onclick="saveGoogleURL('docs')">Save Link</button>
+        </div>
+        <p style="font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:1.6;">
+          Open your Google Doc template in a new tab. Print from the Report Card view 
+          for a clean single-page output.
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick start for Google Sheets formula -->
+    <div class="card">
+      <div class="card-title">Google Sheets Template Formula</div>
+      <p style="font-size:13px;color:var(--ink-mid);margin-bottom:1rem;">Copy these formulas into your Google Sheet to mirror the grading logic:</p>
+      <div style="background:var(--surface-3);border-radius:8px;padding:1rem;font-family:monospace;font-size:12px;color:var(--ink-mid);white-space:pre-wrap;line-height:1.8;">
+=C2*0.5 + D2*0.5          <span style="color:var(--ink-soft);font-family:sans-serif;">← Total score (50/50 SBA/Exam)</span>
+
+=IFS(E2>=80,"A",E2>=70,"B+",E2>=60,"B",E2>=50,"C+",E2>=40,"C",E2>=30,"D",E2>=20,"E",TRUE,"F")
+                            <span style="color:var(--ink-soft);font-family:sans-serif;">← Grade from total</span>
+
+=RANK(X2,$X$2:$X$51,0)     <span style="color:var(--ink-soft);font-family:sans-serif;">← Class rank (col X = overall average)</span>
+      </div>
+      <button class="btn btn-sm" style="margin-top:0.75rem;" onclick="copyFormulas()">📋 Copy Formulas</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── DATA ───
+const SUBJECTS_DEFAULT = [
+  'English Language','Mathematics','Science',
+  'Social Studies','RME','Creative Arts','Twi','French'
+];
+const ALL_SUBJECTS = [
+  'English Language','Mathematics','Science','Social Studies',
+  'RME','Creative Arts','Twi','French','ICT','History',
+  'Physical Education','Music','Home Economics','Agriculture'
+];
+const GRADING = [
+  {min:80,grade:'A',letter:'A',remark:'Excellent'},
+  {min:70,grade:'B+',letter:'B+',remark:'Very Good'},
+  {min:60,grade:'B',letter:'B',remark:'Good'},
+  {min:50,grade:'C+',letter:'C+',remark:'Credit'},
+  {min:40,grade:'C',letter:'C',remark:'Average'},
+  {min:30,grade:'D',letter:'D',remark:'Below Average'},
+  {min:20,grade:'E',letter:'E',remark:'Weak'},
+  {min:0,grade:'F',letter:'F',remark:'Fail'},
+];
+
+function getGrade(score){
+  if(score===null||score===undefined||score==='') return {grade:'—',remark:'—'};
+  for(const g of GRADING) if(score>=g.min) return g;
+  return GRADING[GRADING.length-1];
+}
+function gradeClass(g){ return g.replace('+','-plus'); }
+
+// ─── STORAGE ───
+function loadData(){ return JSON.parse(localStorage.getItem('ges_data')||'{"classes":{},"google":{}}'); }
+function saveData(d){ localStorage.setItem('ges_data', JSON.stringify(d)); }
+
+// ─── TOAST ───
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+// ─── NAV ───
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.nav-btn')[['enter','results','report','classes','integrate'].indexOf(v)].classList.add('active');
+  if(v==='enter') refreshClassSelects();
+  if(v==='results'){ refreshClassSelects(); renderClassResults(); }
+  if(v==='report'){ refreshClassSelects(); }
+  if(v==='classes') renderClasses();
+  if(v==='integrate') loadGoogleURLs();
+}
+
+// ─── CLASS SELECTS ───
+function refreshClassSelects(){
+  const d=loadData();
+  const cls=Object.keys(d.classes);
+  ['enter-class-select','results-class-select','rc-class-select'].forEach(id=>{
+    const sel=document.getElementById(id);
+    if(!sel) return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">— Select class —</option>';
+    cls.forEach(c=>{ const opt=document.createElement('option'); opt.value=c; opt.textContent=c; sel.appendChild(opt); });
+    if(cur&&cls.includes(cur)) sel.value=cur;
+  });
+}
+
+// ─── ENTER SCORES VIEW ───
+function loadClassForEntry(){
+  const cls=document.getElementById('enter-class-select').value;
+  if(!cls){ document.getElementById('enter-empty').style.display=''; document.getElementById('enter-content').style.display='none'; return; }
+  document.getElementById('enter-empty').style.display='none';
+  document.getElementById('enter-content').style.display='';
+  // populate student nav
+  const d=loadData(); const c=d.classes[cls];
+  const nav=document.getElementById('student-nav');
+  nav.innerHTML='';
+  c.students.forEach((s,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=s.id+' – '+s.name; nav.appendChild(o); });
+  loadStudentScores();
+}
+
+function loadStudentScores(){
+  const cls=document.getElementById('enter-class-select').value;
+  if(!cls) return;
+  const d=loadData(); const c=d.classes[cls];
+  const idx=parseInt(document.getElementById('student-nav').value)||0;
+  const stu=c.students[idx];
+  const scores=stu.scores||{};
+
+  // Build table rows
+  const tbody=document.getElementById('scores-tbody'); tbody.innerHTML='';
+  c.subjects.forEach(sub=>{
+    const sc=scores[sub]||{sba:'',exam:''};
+    const total=(sc.sba!==''&&sc.exam!=='')?Math.round(parseFloat(sc.sba||0)*0.5+parseFloat(sc.exam||0)*0.5):null;
+    const g=getGrade(total);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="subject-name">${sub}</td>
+      <td style="text-align:center;"><input type="number" class="score-input" min="0" max="100" value="${sc.sba}" data-sub="${sub}" data-type="sba" oninput="recalcRow(this)"></td>
+      <td style="text-align:center;"><input type="number" class="score-input" min="0" max="100" value="${sc.exam}" data-sub="${sub}" data-type="exam" oninput="recalcRow(this)"></td>
+      <td class="total-score" id="total-${sub.replace(/\s/g,'_')}">${total!==null?total:'—'}</td>
+      <td style="text-align:center;"><div class="grade-badge ${gradeClass(g.grade)}" id="grade-${sub.replace(/\s/g,'_')}">${g.grade}</div></td>
+      <td class="remark-text" id="remark-${sub.replace(/\s/g,'_')}">${g.remark}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  // conduct etc
+  document.getElementById('days-present').value=stu.daysPresent||'';
+  document.getElementById('days-total').value=stu.daysTotal||'';
+  document.getElementById('conduct').value=stu.conduct||'';
+  document.getElementById('teacher-remarks').value=stu.remarks||'';
+
+  updateGrandTotals();
+  // rank badge
+  const rank=getStudentRank(d,cls,idx);
+  const rb=document.getElementById('student-rank-badge');
+  if(rank){ rb.style.display=''; rb.textContent='Rank #'+rank+' of '+c.students.length; }
+  else { rb.style.display='none'; }
+}
+
+function recalcRow(input){
+  const sub=input.dataset.sub;
+  const key=sub.replace(/\s/g,'_');
+  const row=input.closest('tr');
+  const sba=parseFloat(row.querySelector('[data-type="sba"]').value);
+  const exam=parseFloat(row.querySelector('[data-type="exam"]').value);
+  const total=(!isNaN(sba)&&!isNaN(exam))?Math.round(sba*0.5+exam*0.5):null;
+  const g=getGrade(total);
+  document.getElementById('total-'+key).textContent=total!==null?total:'—';
+  const gb=document.getElementById('grade-'+key);
+  gb.textContent=g.grade; gb.className='grade-badge '+gradeClass(g.grade);
+  document.getElementById('remark-'+key).textContent=g.remark;
+  updateGrandTotals();
+}
+
+function updateGrandTotals(){
+  const rows=[...document.querySelectorAll('#scores-tbody tr')];
+  let sum=0, count=0;
+  rows.forEach(tr=>{
+    const sba=parseFloat(tr.querySelector('[data-type="sba"]').value);
+    const exam=parseFloat(tr.querySelector('[data-type="exam"]').value);
+    if(!isNaN(sba)&&!isNaN(exam)){ sum+=Math.round(sba*0.5+exam*0.5); count++; }
+  });
+  const avg=count?Math.round((sum/count)*10)/10:null;
+  document.getElementById('grand-total').textContent=count?sum+'/'+(rows.length*100):'—';
+  document.getElementById('grand-avg').textContent=avg!==null?avg.toFixed(1):'—';
+  const g=getGrade(avg);
+  document.getElementById('overall-grade').textContent=avg!==null?g.grade+' – '+g.remark:'—';
+}
+
+function saveStudentScores(){
+  const cls=document.getElementById('enter-class-select').value;
+  if(!cls) return;
+  const d=loadData(); const c=d.classes[cls];
+  const idx=parseInt(document.getElementById('student-nav').value)||0;
+  const stu=c.students[idx];
+  stu.scores={};
+  document.querySelectorAll('#scores-tbody tr').forEach(tr=>{
+    const sub=tr.querySelector('[data-type="sba"]').dataset.sub;
+    stu.scores[sub]={ sba:tr.querySelector('[data-type="sba"]').value, exam:tr.querySelector('[data-type="exam"]').value };
+  });
+  stu.daysPresent=document.getElementById('days-present').value;
+  stu.daysTotal=document.getElementById('days-total').value;
+  stu.conduct=document.getElementById('conduct').value;
+  stu.remarks=document.getElementById('teacher-remarks').value;
+  saveData(d); toast('✅ Saved '+stu.name);
+}
+
+function saveAllScores(){
+  saveStudentScores();
+  const cls=document.getElementById('enter-class-select').value;
+  if(!cls) return;
+  const d=loadData(); const c=d.classes[cls];
+  c.students.forEach((s,i)=>{ /* already saved current; others unchanged */ });
+  toast('✅ All scores saved');
+}
+const studentDataExample = {
+  id: "student_001",
+  name: "Kwame Mensah",
+  scores: {
+    mathematics: {
+      cat1: 15,    // e.g., out of 20
+      cat2: 18,    // e.g., out of 20
+      project: 8,  // e.g., out of 10
+      group: 9,    // e.g., out of 10
+      exam: 42     // e.g., out of 50
+    },
+    english: {
+      cat1: 0,
+      cat2: 0,
+      project: 0,
+      group: 0,
+      exam: 0
+    }
+  }
+};
+function clearStudentScores(){
+  document.querySelectorAll('#scores-tbody input').forEach(i=>i.value='');
+  document.querySelectorAll('#scores-tbody .total-score').forEach(el=>el.textContent='—');
+  document.querySelectorAll('#scores-tbody .grade-badge').forEach(el=>{el.textContent='—';el.className='grade-badge';});
+  document.querySelectorAll('#scores-tbody .remark-text').forEach(el=>el.textContent='—');
+  updateGrandTotals();
+}
+
+function prevStudent(){
+  const nav=document.getElementById('student-nav');
+  saveStudentScores();
+  if(nav.selectedIndex>0){ nav.selectedIndex--; loadStudentScores(); }
+}
+function nextStudent(){
+  const nav=document.getElementById('student-nav');
+  saveStudentScores();
+  if(nav.selectedIndex<nav.options.length-1){ nav.selectedIndex++; loadStudentScores(); }
+}
+function viewReportCard(){
+  saveStudentScores();
+  const cls=document.getElementById('enter-class-select').value;
+  const idx=document.getElementById('student-nav').value;
+  switchView('report');
+  document.getElementById('rc-class-select').value=cls;
+  populateRCStudents();
+  document.getElementById('rc-student-select').value=idx;
+  renderReportCard();
+}
+
+// ─── RANKING ───
+function getStudentScore(stu,subjects){
+  if(!stu.scores) return null;
+  let sum=0,count=0;
+  subjects.forEach(sub=>{
+    const sc=stu.scores[sub];
+    if(sc&&sc.sba!==''&&sc.exam!==''){
+      sum+=Math.round(parseFloat(sc.sba||0)*0.5+parseFloat(sc.exam||0)*0.5);
+      count++;
+    }
+  });
+  return count?Math.round((sum/count)*10)/10:null;
+}
+
+function getRankedStudents(d,cls){
+  const c=d.classes[cls];
+  const scored=c.students.map((s,i)=>({...s,_i:i,avg:getStudentScore(s,c.subjects)})).filter(s=>s.avg!==null);
+  scored.sort((a,b)=>b.avg-a.avg);
+  scored.forEach((s,i)=>{ s._rank=i+1; });
+  return scored;
+}
+
+function getStudentRank(d,cls,idx){
+  const ranked=getRankedStudents(d,cls);
+  const s=ranked.find(s=>s._i===idx);
+  return s?s._rank:null;
+}
+
+// ─── RESULTS VIEW ───
+function renderClassResults(){
+  const cls=document.getElementById('results-class-select').value;
+  if(!cls){ document.getElementById('results-table-wrap').innerHTML='<div class="empty-state"><div class="empty-icon">📊</div><h3>No class selected</h3><p>Select a class above to view results.</p></div>'; document.getElementById('results-stats').style.display='none'; return; }
+  const d=loadData(); const c=d.classes[cls];
+  const ranked=getRankedStudents(d,cls);
+
+  // Stats
+  const avgs=ranked.map(s=>s.avg);
+  const classAvg=avgs.length?Math.round(avgs.reduce((a,b)=>a+b,0)/avgs.length*10)/10:0;
+  const highest=avgs.length?Math.max(...avgs):0;
+  const passing=ranked.filter(s=>s.avg>=50).length;
+  document.getElementById('results-stats').style.display='grid';
+  document.getElementById('results-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Students</div><div class="stat-value">${c.students.length}</div><div class="stat-sub">enrolled</div></div>
+    <div class="stat-card"><div class="stat-label">Class Average</div><div class="stat-value">${classAvg}</div><div class="stat-sub">out of 100</div></div>
+    <div class="stat-card"><div class="stat-label">Highest Score</div><div class="stat-value">${highest||'—'}</div><div class="stat-sub">avg across subjects</div></div>
+    <div class="stat-card"><div class="stat-label">Passing ≥50</div><div class="stat-value">${passing}</div><div class="stat-sub">students</div></div>
+    <div class="stat-card"><div class="stat-label">Subjects</div><div class="stat-value">${c.subjects.length}</div><div class="stat-sub">assessed</div></div>
+  `;
+
+  // Table
+  let html=`<table class="data-table"><thead><tr><th>Rank</th><th>Student</th><th>ID</th>`;
+  c.subjects.forEach(s=>{ html+=`<th style="font-size:10px;">${s.split(' ').map(w=>w[0]).join('')}</th>`; });
+  html+=`<th>Average</th><th>Grade</th></tr></thead><tbody>`;
+
+  // All students (unranked first)
+  c.students.forEach((stu,i)=>{
+    const r=ranked.find(s=>s._i===i);
+    const avg=r?r.avg:null;
+    const rank=r?r._rank:null;
+    const g=getGrade(avg);
+    let rankCell=rank?rank:'—';
+    let rankCls=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'';
+    html+=`<tr onclick="jumpToStudent(${i})"><td class="rank-cell ${rankCls}">${rank||'—'}</td><td><strong>${stu.name}</strong></td><td style="color:var(--ink-soft);font-size:12px;">${stu.id}</td>`;
+    c.subjects.forEach(sub=>{
+      const sc=stu.scores&&stu.scores[sub];
+      const t=sc&&sc.sba!==''&&sc.exam!==''?Math.round(parseFloat(sc.sba||0)*0.5+parseFloat(sc.exam||0)*0.5):null;
+      html+=`<td style="text-align:center;font-size:13px;">${t!==null?t:'—'}</td>`;
+    });
+    html+=`<td style="text-align:center;font-weight:700;">${avg!==null?avg.toFixed(1):'—'}</td><td style="text-align:center;"><span class="grade-badge ${gradeClass(g.grade)}">${g.grade}</span></td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('results-table-wrap').innerHTML=html;
+}
+
+function jumpToStudent(idx){
+  const cls=document.getElementById('results-class-select').value;
+  if(!cls) return;
+  switchView('enter');
+  document.getElementById('enter-class-select').value=cls;
+  loadClassForEntry();
+  document.getElementById('student-nav').value=idx;
+  loadStudentScores();
+}
+
+// ─── REPORT CARD VIEW ───
+function populateRCStudents(){
+  const cls=document.getElementById('rc-class-select').value;
+  const sel=document.getElementById('rc-student-select');
+  sel.innerHTML='<option value="">— Select student —</option>';
+  if(!cls) return;
+  const d=loadData(); const c=d.classes[cls];
+  c.students.forEach((s,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=s.name; sel.appendChild(o); });
+  document.getElementById('report-card-wrap').innerHTML='<div class="card"><div class="empty-state"><div class="empty-icon">📄</div><h3>Select a student</h3><p>Choose a student to generate the report card.</p></div></div>';
+  document.getElementById('rc-actions').style.display='none';
+}
+
+function renderReportCard(){
+  const cls=document.getElementById('rc-class-select').value;
+  const idx=document.getElementById('rc-student-select').value;
+  if(!cls||idx==='') return;
+  const d=loadData(); const c=d.classes[cls];
+  const stu=c.students[parseInt(idx)];
+  const ranked=getRankedStudents(d,cls);
+  const rank=ranked.find(s=>s._i===parseInt(idx));
+  const rankNum=rank?rank._rank:'—';
+
+  let subRows='';
+  let total=0; let count=0;
+  c.subjects.forEach(sub=>{
+    const sc=stu.scores&&stu.scores[sub];
+    const sba=sc&&sc.sba!==''?parseFloat(sc.sba):null;
+    const exam=sc&&sc.exam!==''?parseFloat(sc.exam):null;
+    const t=(sba!==null&&exam!==null)?Math.round(sba*0.5+exam*0.5):null;
+    const g=getGrade(t);
+    if(t!==null){total+=t;count++;}
+    subRows+=`<tr>
+      <td>${sub}</td>
+      <td>${sba!==null?sba:'—'}</td>
+      <td>${exam!==null?exam:'—'}</td>
+      <td>${t!==null?t:'—'}</td>
+      <td><strong>${g.grade}</strong></td>
+      <td style="color:var(--ink-soft);">${g.remark}</td>
+    </tr>`;
+  });
+
+  const avg=count?Math.round((total/count)*10)/10:null;
+  const og=getGrade(avg);
+
+  const rc=`<div class="report-card">
+    <div class="rc-header">
+      <div class="rc-school">${c.school||'Ghana Education Service'}</div>
+      <div class="rc-title">Primary School Terminal Report Card</div>
+      <div class="rc-subtitle">${c.name} &nbsp;·&nbsp; ${c.year||'2024/2025'} &nbsp;·&nbsp; ${c.term||'Third Term'}</div>
+    </div>
+    <div class="rc-meta">
+      <div class="rc-meta-item"><span class="key">Student ID</span><span class="val">${stu.id}</span></div>
+      <div class="rc-meta-item"><span class="key">Student Name</span><span class="val">${stu.name}</span></div>
+      <div class="rc-meta-item"><span class="key">Class</span><span class="val">${c.name}</span></div>
+      <div class="rc-meta-item"><span class="key">Class Teacher</span><span class="val">${c.teacher||'—'}</span></div>
+      <div class="rc-meta-item"><span class="key">Academic Year</span><span class="val">${c.year||'2024/2025'}</span></div>
+      <div class="rc-meta-item"><span class="key">Term</span><span class="val">${c.term||'Third Term'}</span></div>
+    </div>
+    <table class="rc-subjects">
+      <thead><tr><th>Subject</th><th>SBA (50%)</th><th>Exam (50%)</th><th>Total /100</th><th>Grade</th><th>Remark</th></tr></thead>
+      <tbody>${subRows}</tbody>
+    </table>
+    <div class="rc-legend">
+      <div class="legend-item"><span>A</span> 80–100 Excellent</div>
+      <div class="legend-item"><span>B+</span> 70–79 Very Good</div>
+      <div class="legend-item"><span>B</span> 60–69 Good</div>
+      <div class="legend-item"><span>C+</span> 50–59 Credit</div>
+      <div class="legend-item"><span>C</span> 40–49 Average</div>
+      <div class="legend-item"><span>D</span> 30–39 Below Avg</div>
+      <div class="legend-item"><span>E</span> 20–29 Weak</div>
+      <div class="legend-item"><span>F</span> 0–19 Fail</div>
+    </div>
+    <div class="rc-summary">
+      <div class="rc-sum-item"><div class="k">Total Marks</div><div class="v">${count?total:'—'}<span style="font-size:14px;font-weight:400;color:var(--ink-soft);">/${c.subjects.length*100}</span></div></div>
+      <div class="rc-sum-item"><div class="k">Average Score</div><div class="v">${avg!==null?avg.toFixed(1):'—'}</div></div>
+      <div class="rc-sum-item"><div class="k">Class Position</div><div class="v">${rankNum}<span style="font-size:14px;font-weight:400;color:var(--ink-soft);">/${ranked.length||'—'}</span></div></div>
+    </div>
+    <div class="rc-conduct">
+      <h4>Conduct &amp; Attendance</h4>
+      <div class="rc-conduct-row"><span>Days Present</span><span>${stu.daysPresent||'—'} / ${stu.daysTotal||'—'}</span></div>
+      <div class="rc-conduct-row"><span>Conduct / Behaviour</span><span>${stu.conduct||'—'}</span></div>
+    </div>
+    <div class="rc-conduct">
+      <h4>Class Teacher's Remarks</h4>
+      <p style="font-size:14px;color:var(--ink-mid);line-height:1.7;min-height:40px;">${stu.remarks||'&nbsp;'}</p>
+    </div>
+    <div class="rc-sigs">
+      <div class="sig-block"><div class="sig-line"></div><div class="sig-label">Class Teacher &nbsp;&nbsp;&nbsp; Date: __________</div></div>
+      <div class="sig-block"><div class="sig-line"></div><div class="sig-label">Head Teacher &nbsp;&nbsp;&nbsp; Date: __________</div></div>
+    </div>
+  </div>`;
+
+  document.getElementById('report-card-wrap').innerHTML=rc;
+  document.getElementById('rc-actions').style.display='block';
+}
+
+// ─── CLASSES VIEW ───
+function renderClasses(){
+  refreshClassSelects();
+  const d=loadData();
+  const grid=document.getElementById('class-grid');
+  const cls=Object.keys(d.classes);
+  if(!cls.length){ grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;padding:3rem;"><div class="empty-icon">🏫</div><h3>No classes yet</h3><p>Click <strong>New Class</strong> to get started.</p></div>'; document.getElementById('class-detail').style.display='none'; return; }
+  grid.innerHTML=cls.map(c=>`<div class="class-tile" onclick="showClassDetail('${c}')"><div class="class-tile-name">${c}</div><div class="class-tile-meta">${d.classes[c].students.length} students · ${d.classes[c].subjects.length} subjects</div><div class="class-tile-badge">${d.classes[c].term||'Term 3'}</div></div>`).join('');
+}
+
+let _detailClass=null;
+function showClassDetail(cls){
+  document.querySelectorAll('.class-tile').forEach(t=>t.classList.remove('selected'));
+  document.querySelectorAll('.class-tile').forEach(t=>{ if(t.querySelector('.class-tile-name').textContent===cls) t.classList.add('selected'); });
+  const d=loadData(); const c=d.classes[cls]; _detailClass=cls;
+  document.getElementById('class-detail').style.display='';
+  document.getElementById('detail-title').innerHTML='<span style="width:3px;height:14px;background:var(--gold);border-radius:2px;display:inline-block;margin-right:8px;vertical-align:middle;"></span>'+cls;
+  document.getElementById('class-detail-meta').textContent=`${c.year||''} · ${c.term||''} · Teacher: ${c.teacher||'—'} · School: ${c.school||'—'}`;
+  let html=`<table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Action</th></tr></thead><tbody>`;
+  c.students.forEach((s,i)=>{ html+=`<tr><td>${s.id}</td><td>${s.name}</td><td><button class="btn btn-sm" onclick="jumpToStudent2('${cls}',${i})">Enter Scores →</button></td></tr>`; });
+  html+=`</tbody></table>`;
+  document.getElementById('class-student-list').innerHTML=html;
+}
+function jumpToStudent2(cls,idx){
+  switchView('enter');
+  document.getElementById('enter-class-select').value=cls;
+  loadClassForEntry();
+  document.getElementById('student-nav').value=idx;
+  loadStudentScores();
+}
+
+function deleteClass(){
+  if(!_detailClass||!confirm('Delete class "'+_detailClass+'"? This cannot be undone.')) return;
+  const d=loadData(); delete d.classes[_detailClass]; saveData(d);
+  _detailClass=null; document.getElementById('class-detail').style.display='none';
+  renderClasses(); toast('Class deleted');
+}
+
+// ─── NEW CLASS FORM ───
+function toggleNewClassForm(){
+  const f=document.getElementById('new-class-form');
+  f.classList.toggle('open');
+  if(f.classList.contains('open')){ buildSubjectsCheckboxes(); if(!document.querySelector('#student-roster .student-row')) addStudentRow(); }
+}
+
+function buildSubjectsCheckboxes(){
+  const wrap=document.getElementById('subjects-checkboxes');
+  if(wrap.innerHTML) return;
+  wrap.innerHTML=ALL_SUBJECTS.map(s=>`<label style="text-transform:none;letter-spacing:0;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" ${SUBJECTS_DEFAULT.includes(s)?'checked':''} value="${s}" style="width:auto;"> ${s}</label>`).join('');
+}
+
+let _studentCount=0;
+function addStudentRow(){
+  _studentCount++;
+  const div=document.createElement('div');
+  div.className='student-row';
+  div.style.cssText='display:grid;grid-template-columns:90px 1fr 24px;gap:6px;align-items:center;';
+  div.innerHTML=`<input type="text" placeholder="S${String(_studentCount).padStart(3,'0')}" style="font-size:13px;"><input type="text" placeholder="Student full name" style="font-size:13px;"><button onclick="this.parentNode.remove()" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--ink-soft);line-height:1;">×</button>`;
+  document.getElementById('student-roster').appendChild(div);
+  div.querySelector('input').value='S'+String(_studentCount).padStart(3,'0');
+}
+
+function createClass(){
+  const name=document.getElementById('nc-name').value.trim();
+  if(!name){ toast('Please enter a class name'); return; }
+  const subjects=[...document.querySelectorAll('#subjects-checkboxes input:checked')].map(cb=>cb.value);
+  if(!subjects.length){ toast('Select at least one subject'); return; }
+  const rows=[...document.querySelectorAll('.student-row')];
+  const students=rows.map(r=>{ const ins=r.querySelectorAll('input'); return {id:ins[0].value.trim(),name:ins[1].value.trim()}; }).filter(s=>s.name);
+  if(!students.length){ toast('Add at least one student'); return; }
+  const d=loadData();
+  if(d.classes[name]){ toast('A class with this name already exists'); return; }
+  d.classes[name]={
+    name, subjects, students,
+    year:document.getElementById('nc-year').value,
+    term:document.getElementById('nc-term').value,
+    teacher:document.getElementById('nc-teacher').value,
+    school:document.getElementById('nc-school').value,
+  };
+  saveData(d);
+  toggleNewClassForm();
+  document.getElementById('nc-name').value='';
+  document.getElementById('nc-teacher').value='';
+  document.getElementById('student-roster').innerHTML=''; _studentCount=0;
+  document.getElementById('subjects-checkboxes').innerHTML='';
+  renderClasses(); toast('✅ Class "'+name+'" created');
+}
+
+// ─── GOOGLE INTEGRATIONS ───
+function loadGoogleURLs(){
+  const d=loadData();
+  if(d.google.sheets) document.getElementById('sheets-url').value=d.google.sheets;
+  if(d.google.docs) document.getElementById('docs-url').value=d.google.docs;
+}
+function validateGoogleURL(type){
+  const url=document.getElementById(type+'-url').value.trim();
+  const valid=url&&(url.includes('docs.google.com/spreadsheets')||url.includes('docs.google.com/document')||url.startsWith('https://'));
+  const status=document.getElementById(type+'-status');
+  if(!url){ status.style.display='none'; return; }
+  if(url.startsWith('https://docs.google.com/')){ status.className='url-status ok'; status.textContent='✓ Valid Google URL'; }
+  else if(url.startsWith('https://')){ status.className='url-status ok'; status.textContent='✓ URL looks valid'; }
+  else { status.className='url-status err'; status.textContent='✗ Must be a full https:// URL'; }
+}
+function saveGoogleURL(type){
+  const url=document.getElementById(type+'-url').value.trim();
+  const d=loadData(); d.google[type]=url; saveData(d);
+  toast('✅ Google '+(type==='sheets'?'Sheet':'Doc')+' link saved');
+}
+function openGoogleLink(type){
+  const url=document.getElementById(type+'-url').value.trim();
+  if(!url){ toast('Please enter a URL first'); return; }
+  window.open(url,'_blank');
+}
+
+// ─── EXPORT CSV ───
+function exportCSV(){
+  const cls=document.getElementById('results-class-select').value||document.getElementById('enter-class-select').value;
+  if(!cls){ toast('Select a class first'); return; }
+  const d=loadData(); const c=d.classes[cls];
+  const headers=['Rank','ID','Name',...c.subjects,'Average','Grade'];
+  const ranked=getRankedStudents(d,cls);
+  const rows=c.students.map((stu,i)=>{
+    const r=ranked.find(s=>s._i===i);
+    const subScores=c.subjects.map(sub=>{
+      const sc=stu.scores&&stu.scores[sub];
+      return (sc&&sc.sba!==''&&sc.exam!=='')?Math.round(parseFloat(sc.sba||0)*0.5+parseFloat(sc.exam||0)*0.5):'';
+    });
+    const avg=r?r.avg.toFixed(1):'';
+    const g=r?getGrade(r.avg).grade:'';
+    return [r?r._rank:'',stu.id,stu.name,...subScores,avg,g];
+  });
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv,'+encodeURIComponent(csv); a.download=cls.replace(/\s/g,'_')+'_results.csv'; a.click();
+  toast('📥 CSV downloaded');
+}
+
+// ─── FORMULAS COPY ───
+function copyFormulas(){
+  const t=`=C2*0.5 + D2*0.5\n=IFS(E2>=80,"A",E2>=70,"B+",E2>=60,"B",E2>=50,"C+",E2>=40,"C",E2>=30,"D",E2>=20,"E",TRUE,"F")\n=RANK(X2,$X$2:$X$51,0)`;
+  navigator.clipboard.writeText(t).then(()=>toast('📋 Formulas copied to clipboard'));
+}
+
+// ─── INIT ───
+(function init(){
+  refreshClassSelects();
+
+  // Seed sample class if empty
+  const d=loadData();
+  if(!Object.keys(d.classes).length){
+    d.classes['Class One']={
+      name:'Class One', year:'2024/2025', term:'Third Term',
+      teacher:'Mr. Asante', school:'Ghana Education Service Primary',
+      subjects:SUBJECTS_DEFAULT,
+      students:[
+        {id:'S001',name:'Ama Asante'},{id:'S002',name:'Kofi Mensah'},
+        {id:'S003',name:'Abena Boateng'},{id:'S004',name:'Kwame Owusu'},
+        {id:'S005',name:'Akosua Darko'},{id:'S006',name:'Yaw Amponsah'},
+        {id:'S007',name:'Adjoa Kyei'},{id:'S008',name:'Kwesi Amoah'},
+        {id:'S009',name:'Efua Tetteh'},{id:'S010',name:'Kojo Opoku'},
+      ]
+    };
+    saveData(d);
+    refreshClassSelects();
+  }
+})();
+</script>
+</body>
+</html>

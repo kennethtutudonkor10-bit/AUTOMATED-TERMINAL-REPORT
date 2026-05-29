@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ghana School Terminal Report System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C8973A;
+    --gold-light: #F5E6C8;
+    --gold-pale: #FDF8EE;
+    --ink: #1A1814;
+    --ink-mid: #4A4540;
+    --ink-soft: #8A8278;
+    --surface: #FFFFFF;
+    --surface-2: #FAF9F7;
+    --surface-3: #F3F1EC;
+    --border: #E8E4DC;
+    --border-strong: #D4CEBF;
+    --green: #2D6A4F;
+    --green-light: #D8F3DC;
+    --red: #8B1A1A;
+    --red-light: #FDEAEA;
+    --blue: #1B4F72;
+    --blue-light: #D6EAF8;
+    --shadow: 0 1px 3px rgba(26,24,20,0.08), 0 4px 12px rgba(26,24,20,0.06);
+    --shadow-lg: 0 4px 16px rgba(26,24,20,0.12), 0 12px 40px rgba(26,24,20,0.08);
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface-2);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--ink);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--gold);
+  }
+  .header-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    gap: 1rem;
+  }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-crest {
+    width: 36px; height: 36px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--ink);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .brand-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: white;
+    line-height: 1.2;
+  }
+  .brand-sub { font-size: 11px; color: #999; font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
+  .header-nav {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: #ccc;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { color: white; background: rgba(255,255,255,0.08); }
+  .nav-btn.active { color: var(--gold); border-color: rgba(200,151,58,0.4); background: rgba(200,151,58,0.1); }
+
+  /* ── LAYOUT ── */
+  .app-body {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── PAGE TITLE ── */
+  .page-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .page-title h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .page-title p { color: var(--ink-soft); font-size: 14px; margin-top: 3px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 3px; height: 14px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  /* ── LOGO UPLOAD COMPONENT STYLES ── */
+  #logo-zone:hover {
+    border-color: var(--gold) !important;
+    background: var(--gold-pale) !important;
+  }
+  #logo-zone:hover #logo-placeholder span {
+    color: var(--ink) !important;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink-mid);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--surface-3); border-color: var(--gold); color: var(--ink); }
+  .btn-primary {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+  .btn-primary:hover { background: var(--ink-mid); border-color: var(--ink-mid); color: white; }
+  .btn-gold {
+    background: var(--gold);
+    color: white;
+    border-color: var(--gold);
+  }
+  .btn-gold:hover { background: #b5852e; border-color: #b5852e; color: white; }
+  .btn-danger { color: var(--red); border-color: #F5C6C6; }
+  .btn-danger:hover { background: var(--red-light); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* ── FORMS ── */
+  .form-row {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  input[type="text"], input[type="number"], select, textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,151,58,0.12); }
+  input[type="number"] { text-align: right; }
+
+  /* ── SCORE INPUTS ── */
+  .score-input {
+    width: 65px !important;
+    text-align: center !important;
+    padding: 7px 4px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+  }
+  .score-input:invalid { border-color: #F5C6C6; }
+
+  /* ── SUBJECTS TABLE ── */
+  .subjects-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .subjects-table th {
+    background: var(--surface-3);
+    padding: 10px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .subjects-table th:first-child { text-align: left; }
+  .subjects-table td {
+    padding: 8px 6px;
+    border: 1px solid var(--border);
+    vertical-align: middle;
+    text-align: center;
+  }
+  .subjects-table td:first-child { text-align: left; }
+  .subjects-table tr:hover td { background: var(--gold-pale); }
+  .subject-name { font-weight: 500; color: var(--ink); }
+  
+  /* ── DISPLAYS & RADGES ── */
+  .total-score { font-weight: 700; font-size: 16px; color: var(--ink); text-align: center; }
+  .grade-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 8px; font-size: 13px; font-weight: 700;
+    background: var(--gold-light); color: var(--gold); margin: auto;
+  }
+  .grade-badge.A { background: #D8F3DC; color: #2D6A4F; }
+  .grade-badge.B-plus { background: #D6EAF8; color: #1B4F72; }
+  .grade-badge.B { background: #E8DAEF; color: #6C3483; }
+  .grade-badge.C-plus { background: #FEF9E7; color: #B7950B; }
+  .grade-badge.C { background: #FDEBD0; color: #AF601A; }
+  .grade-badge.D { background: #FDEAEA; color: #922B21; }
+  .grade-badge.E, .grade-badge.F { background: #FDEAEA; color: var(--red); }
+
+  /* ── DATA TABLES ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th {
+    background: var(--ink); color: rgba(255,255,255,0.9); padding: 10px 14px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    text-align: left; position: sticky; top: 60px;
+  }
+  .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--ink-mid); }
+  .data-table tr:hover td { background: var(--gold-pale); cursor: pointer; }
+
+  /* ── CLASS CONFIGS ── */
+  .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .class-tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; cursor: pointer; position: relative; }
+  .class-tile:hover { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,151,58,0.12); }
+  .class-tile-name { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+  .class-tile-meta { font-size: 12px; color: var(--ink-soft); }
+
+  .new-class-form { display: none; }
+  .new-class-form.open { display: block; }
+
+  .integrations-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .integration-card { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; background: var(--surface); }
+  .integration-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .integration-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .integration-title { font-weight: 600; font-size: 15px; }
+  .integration-sub { font-size: 12px; color: var(--ink-soft); }
+  .integration-url-row { display: flex; gap: 8px; margin-top: 8px; }
+  .integration-url-row input { flex: 1; font-size: 12px; }
+  
+  .url-status { font-size: 12px; padding: 4px 10px; border-radius: 6px; margin-top: 8px; display: none; }
+  .url-status.ok { background: var(--green-light); color: var(--green); display: block; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--ink); color: white; padding: 12px 20px; border-radius: 10px; font-size: 14px;
+    box-shadow: var(--shadow-lg); transform: translateY(80px); opacity: 0;
+    transition: all 0.3s; z-index: 9999; border-left: 3px solid var(--gold);
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+
+  .empty-state { text-align: center; padding: 4rem 2rem; color: var(--ink-soft); }
+  .empty-icon { font-size: 48px; margin-bottom: 1rem; }
+
+  @media print {
+    .app-header, .no-print, .btn, #new-class-form { display: none !important; }
+    body { background: white; }
+    .app-body { padding: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .form-row.cols-4, .integrations-grid { grid-template-columns: 1fr; }
+    .nav-btn { padding: 6px 8px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="brand-crest" id="global-header-crest">GES</div>
+      <div>
+        <div class="brand-title" id="global-header-school-name">Terminal Report System</div>
+        <div class="brand-sub">Ghana Education Service · Primary School</div>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn active" onclick="switchView('enter')">📝 Enter Scores</button>
+      <button class="nav-btn" onclick="switchView('results')">📊 Class Results</button>
+      <button class="nav-btn" onclick="switchView('classes')">🏫 Classes</button>
+      <button class="nav-btn" onclick="switchView('integrate')">🔗 Branding & Sync</button>
+    </nav>
+  </div>
+</header>
+
+<div class="app-body">
+
+  <!-- ═══ VIEW: ENTER SCORES (Ghana SBA Standardized) ═══ -->
+  <div id="view-enter" class="view active">
+    <div class="page-title">
+      <div>
+        <h1>Enter Student Scores</h1>
+        <p>Input detailed SBA sub-components and exam parameters</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-gold" onclick="saveAllScores()">💾 Save All</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Subject Scores Matrix</div>
+      <table class="subjects-table" id="scores-table">
+        <thead>
+          <tr>
+            <th rowspan="2" style="width:180px; vertical-align: middle;">Subject</th>
+            <th colspan="4" style="background: var(--gold-pale);">School-Based Assessment (SBA)</th>
+            <th rowspan="2" style="width:80px; vertical-align: middle;">Exam</th>
+            <th rowspan="2" style="width:80px; vertical-align: middle;">Total /100</th>
+            <th rowspan="2" style="width:70px; vertical-align: middle;">Grade</th>
+            <th rowspan="2" style="vertical-align: middle;">Remark</th>
+          </tr>
+          <tr>
+            <th style="font-size:10px; width:65px;">CAT 1</th>
+            <th style="font-size:10px; width:65px;">CAT 2</th>
+            <th style="font-size:10px; width:65px;">Project</th>
+            <th style="font-size:10px; width:65px;">Group</th>
+          </tr>
+        </thead>
+        <tbody id="scores-tbody">
+          <!-- Dynamic row fields go here -->
+          <tr>
+            <td><span class="subject-name">Mathematics</span></td>
+            <td><input type="number" class="score-input" min="0" max="20" placeholder="20"></td>
+            <td><input type="number" class="score-input" min="0" max="20" placeholder="20"></td>
+            <td><input type="number" class="score-input" min="0" max="10" placeholder="10"></td>
+            <td><input type="number" class="score-input" min="0" max="10" placeholder="10"></td>
+            <td><input type="number" class="score-input" min="0" max="50" placeholder="50"></td>
+            <td><span class="total-score">—</span></td>
+            <td><span class="grade-badge">A</span></td>
+            <td><span class="remark-text">Excellent performance</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ VIEW: CLASS RESULTS ═══ -->
+  <div id="view-results" class="view">
+    <div class="page-title">
+      <div>
+        <h1>Class Results</h1>
+        <p>Performance metrics and student positions</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        <h3>No Class Loaded</h3>
+        <p>Active calculations will display rows here once roster records are initialized.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VIEW: CLASSES (Editable Sections & Streams Enabled) ═══ -->
+  <div id="view-classes" class="view">
+    <div class="page-title">
+      <div>
+        <h1>Class Management</h1>
+        <p>Manage classes, streams, and student rosters</p>
+      </div>
+      <button class="btn btn-gold" onclick="openCreateMode()">＋ New Class</button>
+    </div>
+
+    <div id="new-class-form" class="card new-class-form">
+      <div class="card-title" id="class-form-title">Create New Class</div>
+      <input type="hidden" id="edit-class-id" value="">
+
+      <div class="form-row cols-4">
+        <div>
+          <label>Class Name</label>
+          <input type="text" id="nc-name" placeholder="e.g. Class 2, Basic 4…">
+        </div>
+        <div>
+          <label>Section / Stream</label>
+          <input type="text" id="nc-section" placeholder="e.g. A, B, Gold, Alpha">
+        </div>
+        <div>
+          <label>Academic Year</label>
+          <input type="text" id="nc-year" value="2025/2026">
+        </div>
+        <div>
+          <label>Term</label>
+          <select id="nc-term">
+            <option>First Term</option>
+            <option>Second Term</option>
+            <option selected>Third Term</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row cols-2">
+        <div>
+          <label>Class Teacher</label>
+          <input type="text" id="nc-teacher" placeholder="Teacher's full name">
+        </div>
+        <div>
+          <label>School Name</label>
+          <input type="text" id="nc-school" placeholder="School name">
+        </div>
+      </div>
+
+      <div style="margin-bottom:1rem;" id="roster-section-container">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <label style="margin:0;">Student Roster</label>
+          <button class="btn btn-sm" onclick="addStudentRow()">＋ Add Student</button>
+        </div>
+        <div id="student-roster" style="display:grid;gap:6px;"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn" onclick="closeClassForm()">Cancel</button>
+        <button class="btn btn-primary" id="class-form-submit-btn" onclick="handleClassFormSubmit()">Save Class</button>
+      </div>
+    </div>
+
+    <div id="class-grid" class="class-grid"></div>
+
+    <div id="class-detail" style="display:none;">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <div class="card-title" id="detail-title" style="margin:0;">Class View</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm" onclick="openEditMode()">✏️ Edit Details</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteClass()">🗑 Delete</button>
+          </div>
+        </div>
+        <div id="class-detail-meta" style="font-size:13px;color:var(--ink-soft);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VIEW: GOOGLE INTEGRATIONS & IDENTITY SETUP ═══ -->
+  <div id="view-integrate" class="view">
+    <!-- School Profile Workspace Card -->
+    <div class="card" style="margin-bottom: 2rem;">
+      <div class="card-title">School Identity & Branding</div>
+      <p style="font-size: 13px; color: var(--ink-soft); margin-bottom: 1.5rem;">
+        Configure branding credentials below. Changes are synchronized across layouts and local storage partitions instantly.
+      </p>
+
+      <div style="display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap;">
+        <div style="flex: 0 0 160px;">
+          <label>School Crest / Logo</label>
+          <div id="logo-zone" style="width: 160px; height: 160px; border: 2px dashed var(--border-strong); border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--surface-2); cursor: pointer; position: relative; overflow: hidden; text-align: center; padding: 10px;" onclick="document.getElementById('logo-file-input').click()">
+            <div id="logo-placeholder">
+              <span style="font-size: 28px; display: block; margin-bottom: 4px;">📸</span>
+              <span style="font-size: 11px; font-weight: 500; color: var(--ink-soft); display: block;">Click to Upload Crest</span>
+            </div>
+            <img id="logo-preview" src="" alt="School Crest Preview" style="display: none; width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; padding: 8px; background: #fff;">
+          </div>
+          <input type="file" id="logo-file-input" accept="image/*" style="display: none;" onchange="handleLogoSelection(event)">
+        </div>
+
+        <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between; height: 160px;">
+          <div>
+            <label for="profile-school-name">Official School Name</label>
+            <input type="text" id="profile-school-name" placeholder="e.g. Accra Methodist Basic School" style="font-size: 15px; padding: 12px;">
+            <p style="font-size: 11px; color: var(--ink-soft); margin-top: 6px;">Appears at the top of printable student report charts.</p>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="clearSchoolProfile()" style="margin-right: 4px;">Reset Identity</button>
+            <button class="btn btn-gold" onclick="saveSchoolProfile()">💾 Save Profile Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Google Endpoint Form Links -->
+    <div class="integrations-grid">
+      <div class="integration-card">
+        <div class="integration-header">
+          <div class="integration-icon" style="background:#E8F5E9;">📊</div>
+          <div>
+            <div class="integration-title">Google Sheets Integration</div>
+            <div class="integration-sub">Link your master score sheet data storage</div>
+          </div>
+        </div>
+        <label>Google Sheet URL Endpoint</label>
+        <div class="integration-url-row">
+          <input type="text" id="sheets-url" placeholder="https://docs.google.com/spreadsheets/d/…">
+          <button class="btn btn-sm">Open ↗</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST WRAPPER NODE -->
+<div id="toast">Changes saved successfully.</div>
+
+<script>
+  // Core Mock Arrays to manage runtime states
+  let classesArray = [];
+  let activeClassId = "";
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadSavedSchoolProfile();
+  });
+
+  // Navigation Logic Controller
+  function switchView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    const selectedView = document.getElementById(`view-${viewId}`);
+    if (selectedView) selectedView.classList.add('active');
+    
+    const eventTargetBtn = document.querySelector(`[onclick="switchView('${viewId}')"]`);
+    if (eventTargetBtn) eventTargetBtn.classList.add('active');
+  }
+
+  // Notification UI System
+  function showNotification(message) {
+    const el = document.getElementById('toast');
+    el.innerText = message;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 3000);
+  }
+
+  // Editable Class Context Controllers
+  function openCreateMode() {
+    document.getElementById('edit-class-id').value = "";
+    document.getElementById('class-form-title').innerText = "Create New Class";
+    document.getElementById('class-form-submit-btn').innerText = "Create Class";
+    document.getElementById('nc-name').value = "";
+    document.getElementById('nc-section').value = "";
+    document.getElementById('nc-teacher').value = "";
+    document.getElementById('student-roster').innerHTML = "";
+    document.getElementById('new-class-form').classList.add('open');
+    document.getElementById('roster-section-container').style.display = "block";
+  }
+
+  function openEditMode() {
+    if (!activeClassId) return;
+    document.getElementById('edit-class-id').value = activeClassId;
+    document.getElementById('class-form-title').innerText = "Edit Class Details";
+    document.getElementById('class-form-submit-btn').innerText = "Save Changes";
+    
+    document.getElementById('roster-section-container').style.display = "none";
+    document.getElementById('new-class-form').classList.add('open');
+    document.getElementById('new-class-form').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function closeClassForm() {
+    document.getElementById('new-class-form').classList.remove('open');
+  }
+
+  function handleClassFormSubmit() {
+    showNotification("Class adjustments updated in engine runtime data structures.");
+    closeClassForm();
+  }
+
+  // School Crest Storage Processing Engine via base64 streams
+  function handleLogoSelection(event) {
+    const file = event.target.files[0];
+    if (!file || !file.type.match('image.*')) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('logo-preview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      document.getElementById('logo-placeholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveSchoolProfile() {
+    const nameInput = document.getElementById('profile-school-name').value.trim();
+    const previewImg = document.getElementById('logo-preview');
+    
+    if (!nameInput) {
+      showNotification("Please state your institution name to verify parameters.");
+      return;
+    }
+
+    localStorage.setItem('savedSchoolName', nameInput);
+    if (previewImg.style.display === 'block' && previewImg.src) {
+      localStorage.setItem('savedSchoolLogo', previewImg.src);
+    }
+    applyProfileToUI(nameInput, localStorage.getItem('savedSchoolLogo'));
+    showNotification("School metadata saved successfully.");
+  }
+
+  function loadSavedSchoolProfile() {
+    const storedName = localStorage.getItem('savedSchoolName');
+    const storedLogo = localStorage.getItem('savedSchoolLogo');
+
+    if (storedName) document.getElementById('profile-school-name').value = storedName;
+    if (storedLogo) {
+      const preview = document.getElementById('logo-preview');
+      preview.src = storedLogo;
+      preview.style.display = 'block';
+      document.getElementById('logo-placeholder').style.display = 'none';
+    }
+    applyProfileToUI(storedName, storedLogo);
+  }
+
+  function applyProfileToUI(name, logoDataUrl) {
+    const headerTitle = document.getElementById('global-header-school-name');
+    const headerCrest = document.getElementById('global-header-crest');
+
+    if (name) headerTitle.innerText = name;
+    if (logoDataUrl) {
+      headerCrest.innerHTML = `<img src="${logoDataUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+    }
+  }
+
+  function clearSchoolProfile() {
+    if(confirm("Revert profile identity back to global defaults?")) {
+      localStorage.removeItem('savedSchoolName');
+      localStorage.removeItem('savedSchoolLogo');
+      window.location.reload();
+    }
+  }
+</script>
+</body>
+</html>

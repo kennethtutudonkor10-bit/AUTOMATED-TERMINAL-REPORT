@@ -1,0 +1,167 @@
+<!-- ═══ VIEW: CLASSES ═══ -->
+  <div id="view-classes" class="view">
+    <div class="page-title">
+      <div>
+        <h1>Class Management</h1>
+        <p>Manage classes, streams, and student rosters</p>
+      </div>
+      <button class="btn btn-gold" onclick="openCreateMode()">＋ New Class</button>
+    </div>
+
+    <!-- Dynamic Form: Handles both Create and Edit operations -->
+    <div id="new-class-form" class="card new-class-form">
+      <div class="card-title" id="class-form-title">Create New Class</div>
+      
+      <!-- Hidden field to keep track of which class ID we are updating -->
+      <input type="hidden" id="edit-class-id" value="">
+
+      <div class="form-row cols-4">
+        <div>
+          <label>Class Name</label>
+          <input type="text" id="nc-name" placeholder="e.g. Class 2, Basic 4…">
+        </div>
+        <div>
+          <label>Section / Stream</label>
+          <input type="text" id="nc-section" placeholder="e.g. A, B, Gold, Alpha">
+        </div>
+        <div>
+          <label>Academic Year</label>
+          <input type="text" id="nc-year" value="2025/2026">
+        </div>
+        <div>
+          <label>Term</label>
+          <select id="nc-term">
+            <option>First Term</option>
+            <option>Second Term</option>
+            <option selected>Third Term</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div>
+          <label>Class Teacher</label>
+          <input type="text" id="nc-teacher" placeholder="Teacher's full name">
+        </div>
+        <div>
+          <label>School Name</label>
+          <input type="text" id="nc-school" placeholder="School name">
+        </div>
+      </div>
+
+      <!-- Subjects selector -->
+      <div style="margin-bottom:1rem;">
+        <label style="margin-bottom:8px;display:block;">Subjects (check all that apply)</label>
+        <div id="subjects-checkboxes" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;"></div>
+      </div>
+
+      <!-- Student roster -->
+      <div style="margin-bottom:1rem;" id="roster-section-container">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <label style="margin:0;">Student Roster</label>
+          <button class="btn btn-sm" onclick="addStudentRow()">＋ Add Student</button>
+        </div>
+        <div id="student-roster" style="display:grid;gap:6px;max-height:300px;overflow-y:auto;padding-right:4px;"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn" onclick="closeClassForm()">Cancel</button>
+        <button class="btn btn-primary" id="class-form-submit-btn" onclick="handleClassFormSubmit()">Save Class</button>
+      </div>
+    </div>
+
+    <div id="class-grid" class="class-grid">
+      <!-- Classes populated here -->
+    </div>
+
+    <!-- Class detail panel -->
+    <div id="class-detail" style="display:none;">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px;">
+          <div class="card-title" id="detail-title" style="margin:0;"></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm" id="edit-class-details-btn" onclick="openEditMode()">✏️ Edit Class Details</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteClass()">🗑 Delete Class</button>
+          </div>
+        </div>
+        <div id="class-detail-meta" style="font-size:13px;color:var(--ink-soft);margin-bottom:1rem;"></div>
+        <div id="class-student-list"></div>
+      </div>
+    </div>
+  </div>// State management tracking variables
+let activeClassId = ""; 
+
+function openCreateMode() {
+  // Reset the tracking ID and clear previous form entries
+  document.getElementById('edit-class-id').value = "";
+  document.getElementById('class-form-title').innerText = "Create New Class";
+  document.getElementById('class-form-submit-btn').innerText = "Create Class";
+  
+  // Clear the actual input text blocks
+  document.getElementById('nc-name').value = "";
+  document.getElementById('nc-section').value = "";
+  document.getElementById('nc-teacher').value = "";
+  document.getElementById('student-roster').innerHTML = "";
+  
+  // Open up the form wrapper visible on screen
+  document.getElementById('new-class-form').classList.add('open');
+  document.getElementById('roster-section-container').style.display = "block"; 
+}
+
+function openEditMode() {
+  if (!activeClassId) return;
+  
+  // Switch titles to reflect an active update session
+  document.getElementById('edit-class-id').value = activeClassId;
+  document.getElementById('class-form-title').innerText = "Edit Class Details";
+  document.getElementById('class-form-submit-btn').innerText = "Save Changes";
+  
+  // Locate the target class object from your master array
+  const currentClass = classesArray.find(c => c.id === activeClassId);
+  if (!currentClass) return;
+  
+  // Populate the text fields with saved system info
+  document.getElementById('nc-name').value = currentClass.name || "";
+  document.getElementById('nc-section').value = currentClass.section || "";
+  document.getElementById('nc-year').value = currentClass.year || "";
+  document.getElementById('nc-term').value = currentClass.term || "Third Term";
+  document.getElementById('nc-teacher').value = currentClass.teacher || "";
+  document.getElementById('nc-school').value = currentClass.school || "";
+  
+  // Hide the roster adjustments if you only want to focus on editing name/section metadata here
+  document.getElementById('roster-section-container').style.display = "none";
+  
+  // Scroll and open the form panel smoothly
+  document.getElementById('new-class-form').classList.add('open');
+  document.getElementById('new-class-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeClassForm() {
+  document.getElementById('new-class-form').classList.remove('open');
+  document.getElementById('edit-class-id').value = "";
+}
+
+function handleClassFormSubmit() {
+  const editId = document.getElementById('edit-class-id').value;
+  
+  if (editId) {
+    // ── UPDATE EXISTNG CLASS METADATA LOGIC ──
+    const targetClass = classesArray.find(c => c.id === editId);
+    if (targetClass) {
+      targetClass.name = document.getElementById('nc-name').value.trim();
+      targetClass.section = document.getElementById('nc-section').value.trim();
+      targetClass.year = document.getElementById('nc-year').value.trim();
+      targetClass.term = document.getElementById('nc-term').value;
+      targetClass.teacher = document.getElementById('nc-teacher').value.trim();
+      targetClass.school = document.getElementById('nc-school').value.trim();
+      
+      showNotification("Class updates saved successfully.");
+    }
+  } else {
+    // ── STANDARD NEW CLASS INJECTION LOGIC ──
+    // Call your existing build script here...
+    showNotification("New class configured successfully.");
+  }
+  
+  closeClassForm();
+  renderClassGrid(); // Refresh your dashboard interface cards
+}
